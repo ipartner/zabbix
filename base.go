@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"crypto/tls"
 	"sync/atomic"
 )
 
@@ -67,7 +68,10 @@ type API struct {
 // It also may contain HTTP basic auth username and password like
 // http://username:password@host/api_jsonrpc.php.
 func NewAPI(url string) (api *API) {
-	return &API{url: url, c: http.Client{}}
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	return &API{url: url, c: http.Client{Transport: tr}}
 }
 
 func (api *API) printf(format string, v ...interface{}) {
